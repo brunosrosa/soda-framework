@@ -1,0 +1,48 @@
+# SODA Framework .gitignore
+# Purpose: Protect Secrets & Keep Root Clean
+
+# 1. Secrets (THE LAW)
+.env
+.env.*
+! .env.example
+*.pem
+*.key
+id_rsa
+secrets/
+
+# 2. Python / Kernel
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+.agent/venv/
+dist/
+build/
+*.egg-info/
+
+# 3. Node / Web
+node_modules/
+npm-debug.log
+
+# 4. OS
+.DS_Store
+Thumbs.db
+
+# 5. SODA / Agent Specific
+# We WANT to commit .agent config, but NOT runtime temporary files
+.agent/memory/hot/*
+!.agent/memory/hot/task_plan.md
+!.agent/memory/hot/.keep
+.agent/memory/vectors/
+.agent/memory/sqlite/
+.agent/logs/
+.agent/temp/
+
+# 6. Docker
+docker-data/
+*.log
+
+# 7. IDE
+.vscode/
+.idea/

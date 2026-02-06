@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  # O CÉREBRO: Roteamento
+  gateway:
+    image: docker/mcp-gateway:latest
+    ports: ["8080:8080"]
+    volumes:
+      - ./.agent/config/gateway.yaml:/etc/mcp/config.yaml
+
+  # --- INGESTÃO SOBERANA ---
+  docfork:
+    image: ghcr.io/read-the-docs/docfork:latest
+    # Lê sites de doc e converte para MD limpo
+  rtfmbro:
+    image: ghcr.io/rtfmbro/rtfmbro:latest
+    # Fallback para repositórios brutos
+
+  # --- ARMADA DE BUSCA ---
+  brave-search:
+    image: mcp/brave-search:latest
+    environment:
+      - API_KEY=${BRAVE_KEY}
+  arxiv-search:
+    image: mcp/arxiv:latest
+  
+  # --- INTELIGÊNCIA LOCAL (CPU SAFE) ---
+  heuristic-mcp:
+    image: omar-haris/heuristic-mcp:latest
+    volumes:
+      - .:/workspace:ro
+  
+  # --- GESTÃO & MEMÓRIA ---
+  github-pm:
+    image: kunwarvivek/github-project-manager:latest
+    environment:
+      - GITHUB_TOKEN=${GH_TOKEN}
+  openmemory:
+    image: caviraoss/openmemory:latest
+    volumes:
+      - .agent/memory/cold:/data

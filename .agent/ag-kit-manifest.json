@@ -1,0 +1,28 @@
+{
+    "name": "soda-ag-kit-base",
+    "version": "1.8.0-genesis",
+    "type": "custom-kernel",
+    "components": {
+        "structure": "standard-v1",
+        "personas": [
+            "orchestrator",
+            "architect",
+            "coder",
+            "auditor",
+            "product_manager"
+        ],
+        "workflows": [
+            "00_validate_setup"
+        ],
+        "memory": [
+            "hot-file-based",
+            "cold-openmemory-docker"
+        ],
+        "engine": "smolagents-ralph-loop"
+    },
+    "compliance": {
+        "spec_lock": true,
+        "clean_root": true,
+        "hardware_safe": true
+    }
+}

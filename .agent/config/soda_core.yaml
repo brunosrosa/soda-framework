@@ -1,0 +1,9 @@
+soda_version: "1.4"
+runtime: "antigravity"
+llm_provider: "gemini-2.0-flash"
+safety:
+  max_loops: 15
+  require_human_approval: true
+paths:
+  sops: ".agent/.soda/sops_registry"
+  memory: ".agent/memory"

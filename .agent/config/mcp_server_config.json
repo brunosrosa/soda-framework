@@ -1,0 +1,33 @@
+{
+    "mcpServers": {
+        "heuristic-mcp": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "omar-haris/smart-coding-mcp:latest"
+            ]
+        },
+        "toon-mcp": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "jellyjamin/toon-mcp:latest"
+            ]
+        },
+        "github-pm": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "-e",
+                "GITHUB_TOKEN",
+                "kunwarvivek/mcp-github-project-manager:latest"
+            ]
+        }
+    }
+}

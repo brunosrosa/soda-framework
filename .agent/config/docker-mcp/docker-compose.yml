@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  # O Container "Cérebro" (Opcional se rodar local)
+  soda-brain:
+    image: python:3.12-slim
+    command: tail -f /dev/null
+    volumes:
+      - ../../../:/app
+  # Gateway de Ferramentas (Placeholder)
+  mcp-gateway:
+    image: alpine
+    command: echo "MCP Gateway Ready"

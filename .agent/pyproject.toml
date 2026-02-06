@@ -1,0 +1,18 @@
+[project]
+name = "soda-kernel"
+version = "1.8.0"
+description = "SODA Framework v1.8 Core - Hardware Agnostic Agentic Kernel"
+requires-python = ">=3.12"
+dependencies = [
+    "smolagents>=1.0.0",
+    "google-generativeai>=0.8.0",
+    "python-dotenv>=1.0.0",
+    "duckduckgo-search>=6.0.0",
+    "chromadb>=0.5.0",
+    "networkx>=3.0",
+    "pydantic>=2.7.0",
+    "rich>=13.0.0"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
