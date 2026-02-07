@@ -171,7 +171,31 @@ class RalphLoop:
             print("🦆 Search: DuckDuckGo Activated (Fallback)")
             tools_list.append(DuckDuckGoSearchTool())
         
-        # CodeAgent: O agente que escreve Python para resolver problemas (roda na CPU local)
+        # --- MCP GATEWAY INTEGRATION (VII-G) ---
+        try:
+            # Add local scripts path to sys.path to ensure import works if running from root
+            sys.path.append(str(Path(__file__).parent))
+            from mcp_manager import McpManager
+            
+            mcp_profile = os.getenv("SODA_PROFILE", "dev") # Default to dev for testing
+            print(f"🔌 MCP Gateway: Loading profile '{mcp_profile}'...")
+            
+            mcp_mgr = McpManager(mcp_profile)
+            # Health check quick scan (optional, maybe too slow for every boot? Skipping for speed)
+            # mcp_health = mcp_mgr.health_check()
+            
+            mcp_tools = mcp_mgr.get_tools_for_profile()
+            if mcp_tools:
+                tool_names = [t.name for t in mcp_tools]
+                print(f"🛠️  MCP Tools Inject: {tool_names}")
+                tools_list.extend(mcp_tools)
+            else:
+                print(f"ℹ️  MCP Gateway: No tools for profile '{mcp_profile}'")
+                
+        except Exception as e:
+            print(f"⚠️ MCP Gateway Warning: Required dependencies missing or Docker down. ({e})")
+            # Non-blocking failure
+            pass
         self.agent = CodeAgent(
             tools=tools_list,
             model=self.model,

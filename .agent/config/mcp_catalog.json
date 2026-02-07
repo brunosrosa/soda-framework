@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "profiles": {
+    "default": ["read_file", "write_file", "list_files", "tavily"],
+    "dev": ["default", "heuristic", "github"],
+    "research": ["default", "toon", "tavily_deep"],
+    "full": ["*"]
+  },
+  "servers": {
+    "heuristic": {
+      "name": "heuristic",
+      "description": "Intelligent Code Analysis and Metrics",
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "heuristic-mcp"],
+      "env": {}
+    },
+    "toon": {
+      "name": "toon",
+      "description": "Token Optimization Object Notation (Compression)",
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "toon-mcp"],
+      "env": {}
+    },
+    "github": {
+      "name": "github",
+      "description": "GitHub Integration (Issues, PRs, Tree)",
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}

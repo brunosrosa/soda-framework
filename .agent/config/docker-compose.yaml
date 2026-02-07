@@ -39,9 +39,70 @@ services:
   #   networks:
   #     - soda_network
 
+  # --- MCP SERVERS (The Tool Belt) ---
+  
+  # 1. Heuristic (Code Analysis)
+  mcp_heuristic:
+    image: node:20-alpine
+    container_name: soda_mcp_heuristic
+    command: npx -y @softerist/heuristic-mcp
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    working_dir: /app
+    volumes:
+      - ../../../:/app/codebase:ro
+    networks:
+      - soda_network
+
+  # 2. TOON (Compression) - Jellyjamin Implementation
+  mcp_toon:
+    build:
+      context: ../services/toon/toon-context-mcp
+      dockerfile: Dockerfile
+    container_name: soda_mcp_toon
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    environment:
+      - TOON_THRESHOLD=0.7
+      - AUTO_CONVERT=true
+    networks:
+      - soda_network
+
+  # 3. GitHub (Integration)
+  mcp_github:
+    image: node:20-alpine
+    container_name: soda_mcp_github
+    command: npx -y @modelcontextprotocol/server-github
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    environment:
+      - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_TOKEN}
+    networks:
+      - soda_network
+
+  # 4. Aleph (Deep Research RLM)
+  mcp_aleph:
+    build:
+      context: ../services/aleph
+      dockerfile: Dockerfile
+    container_name: soda_mcp_aleph
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    working_dir: /app
+    volumes:
+      - ../../../:/app/codebase:ro # Read codebase
+      - aleph_workspace:/app/workspace # Persist research
+    networks:
+      - soda_network
+
 networks:
   soda_network:
     driver: bridge
 
 volumes:
   openmemory_data:
+  aleph_workspace:
