@@ -1,32 +1,43 @@
 version: '3.8'
 
 services:
+  # --- OpenMemory Backend (The Engine) ---
   openmemory:
-    image: caviraoss/openmemory:latest
+    build:
+      context: ../services/openmemory/packages/openmemory-js
+      dockerfile: Dockerfile
     container_name: soda_openmemory
     restart: unless-stopped
     ports:
-      - "3000:3000" # API Port
+      - "8080:8080" # API Port
     environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/openmemory
-      - JWT_SECRET=${JWT_SECRET:-soda_secret_key}
-    depends_on:
-      - db
+      - OM_PORT=8080
+      - OM_MODE=standard
+      - OM_DB_PATH=/data/openmemory.sqlite
+      # Integration Hooks
+      - OM_IDE_MODE=true 
+    volumes:
+      - openmemory_data:/data
     networks:
       - soda_network
 
-  db:
-    image: postgres:15-alpine
-    container_name: soda_memory_db
-    restart: unless-stopped
-    environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=openmemory
-    volumes:
-      - openmemory_data:/var/lib/postgresql/data
-    networks:
-      - soda_network
+  # --- OpenMemory Dashboard (The UI) ---
+  # DISABLED: Source code missing in OSS repo?
+  # openmemory-dashboard:
+  #   build:
+  #     context: ../services/openmemory/dashboard
+  #     dockerfile: Dockerfile
+  #   container_name: soda_openmemory_dash
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NEXT_PUBLIC_API_URL=http://localhost:8080
+  #   depends_on:
+  #     openmemory:
+  #       condition: service_started
+  #   networks:
+  #     - soda_network
 
 networks:
   soda_network:

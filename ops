@@ -1,0 +1,26 @@
+#!/bin/bash
+# SODA OpenSpec Wrapper (Clean Root Enforcer)
+# Usage: ./ops <command> [args]
+
+# Define onde vive o cérebro estruturado
+OPENSPEC_ROOT=".agent/openspec"
+
+# Garante que o diretório existe
+if [ ! -d "$OPENSPEC_ROOT" ]; then
+    echo "🚨 OpenSpec root not found at $OPENSPEC_ROOT"
+    exit 1
+fi
+
+# Executa o OpenSpec apontando para a raiz correta
+# Nota: O CLI do OpenSpec pode precisar estar no diretório para achar configs, 
+# ou aceitar um flag --root. Como o flag não é claro, vamos via CD.
+
+CURRENT_DIR=$(pwd)
+cd "$OPENSPEC_ROOT" || exit
+
+# Executa o comando
+# Se for "new", "continue", etc, passamos direto
+openspec "$@"
+
+# Volta
+cd "$CURRENT_DIR" || exit

@@ -16,6 +16,9 @@
 - **Default (Agora):** Cloud-First (Gemini via Antigravity/OAuth/CLI) ou CPU-Only (Scripts Python leves).
 - **Futuro (Switch):** A arquitetura deve permitir ligar a GPU local apenas mudando uma flag no `.env`, sem refatorar o código.
 
+## BOOTSTRAP PROTOCOL (SODA v0.3)
+
+> Este documento guia a inicialização do ambiente de desenvolvimento do SODA na fase atual (v0.3).
 ## 2. O PROJETO: S.O.D.A. v1.8
 
 **Sistema Operacional de Desenvolvimento Agêntico (Spec-Oriented Dockerized Architecture)**

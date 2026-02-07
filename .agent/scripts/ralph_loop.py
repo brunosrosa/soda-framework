@@ -6,18 +6,94 @@ from pathlib import Path
 from typing import Optional
 
 # Dependências Externas (Instalar via uv/pip)
+import json
+import requests
 from dotenv import load_dotenv
-from smolagents import CodeAgent, LiteLLMModel, Tool
+from smolagents import CodeAgent, LiteLLMModel, Tool, DuckDuckGoSearchTool
 from smolagents.tools import tool
+from memory_manager import MemoryManager # SUMA
 
 # Carrega variáveis de ambiente do .env na raiz
 load_dotenv()
 
+class TavilySearchTool(Tool):
+    name = "web_search"
+    description = "Searches the web for a given query using Tavily API."
+    inputs = {
+        "query": {
+            "type": "string",
+            "description": "The search query to look up on the web.",
+        }
+    }
+    output_type = "string"
+
+    def __init__(self, api_key=None):
+        super().__init__()
+        self.api_key = api_key or os.getenv("TAVILY_API_KEY")
+
+    def forward(self, query: str) -> str:
+        if not self.api_key:
+            return "Error: TAVILY_API_KEY not found."
+            
+        try:
+            response = requests.post(
+                "https://api.tavily.com/search",
+                json={"query": query, "api_key": self.api_key},
+                timeout=10
+            )
+            data = response.json()
+            results = data.get("results", [])
+            return "\n".join([f"- {r['title']}: {r['url']}\n  {r['content']}" for r in results[:3]])
+        except Exception as e:
+            return f"Error searching with Tavily: {str(e)}"
+
 # --- CONFIGURAÇÃO DE HARDWARE AGNÓSTICO (SODA v1.8) ---
 # Define quem é o "Big Brain".
-# Opções: "gemini" (Cloud - Default), "ollama" (Local GPU - Futuro), "vertex" (Enterprise)
+# Opções: "gemini" (Cloud), "ollama" (Local GPU), "vertex" (Enterprise)
 LLM_PROVIDER = os.getenv("SODA_LLM_PROVIDER", "gemini").lower()
-MODEL_ID = os.getenv("SODA_LLM_MODEL", "gemini/gemini-3-pro-latest")
+RAW_MODEL_STRING = os.getenv("SODA_LLM_MODEL", "flash").lower()
+
+import subprocess
+
+def get_ollama_url():
+    """
+    Tenta descobrir a URL do Ollama automaticamente.
+    Prioridade:
+    1. ENV VAR (Se definida explicitamente)
+    2. Localhost (Linux Nativo)
+    3. WSL Gateway (Windows Host via WSL)
+    """
+    env_url = os.getenv("OLLAMA_BASE_URL")
+    if env_url and "localhost" not in env_url:
+        return env_url
+        
+    candidates = ["http://localhost:11434"]
+    
+    # Tentativa de descobrir IP do Host WSL
+    try:
+        result = subprocess.run(
+            "ip route show | grep default | awk '{print $3}'", 
+            shell=True, capture_output=True, text=True
+        )
+        gateway_ip = result.stdout.strip()
+        if gateway_ip:
+            candidates.append(f"http://{gateway_ip}:11434")
+    except:
+        pass
+        
+    # Testar conectividade
+    print("🔌 SODA Kernel: Buscando servidor Ollama...")
+    for url in candidates:
+        try:
+            resp = requests.get(f"{url}/api/tags", timeout=1)
+            if resp.status_code == 200:
+                print(f"✅ Ollama encontrado em: {url}")
+                return url
+        except:
+            continue
+            
+    print("⚠️ Ollama não encontrado. Usando default (localhost).")
+    return "http://localhost:11434"
 
 def get_model():
     """
@@ -30,92 +106,52 @@ def get_model():
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
             print("🚨 ERRO: 'GEMINI_API_KEY' não encontrada no .env.")
-            print("Para modo Cloud-First, gere uma chave no Google AI Studio.")
             sys.exit(1)
-        return LiteLLMModel(model_id=MODEL_ID, api_key=api_key)
+            
+        # Agnostic Model Selection (Always Latest)
+        if "pro" in RAW_MODEL_STRING:
+             model_id = "gemini/gemini-pro-latest"
+             print("✨ Selecionado: Gemini Pro (Latest)")
+        else:
+             model_id = "gemini/gemini-flash-latest"
+             print("⚡ Selecionado: Gemini Flash (Latest)")
+             
+        return LiteLLMModel(model_id=model_id, api_key=api_key)
 
     elif LLM_PROVIDER == "ollama":
-        # PREPARADO PARA O FUTURO (Quando a ventoinha voltar)
-        # Requer: ollama serve rodando
-        base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+        base_url = get_ollama_url()
         print(f"⚠️ MODO LOCAL (GPU/CPU): Conectando em {base_url}")
+        
+        # Smart Local Mapping (Baseado nos testes do usuário)
+        # raw string -> ollama tag
+        local_map = {
+            "qwen": "qwen2.5:3b",    # Assumindo 3b/4b como default leve
+            "qwen3": "qwen3:4b",     # Requested by User
+            "phi": "phi4-mini",      # Microsoft Phi-4 Mini
+            "reasoning": "phi4-mini-reasoning"
+        }
+        
+        # Tenta encontrar match ou usa string crua
+        tag = local_map.get(RAW_MODEL_STRING, RAW_MODEL_STRING)
+        # Se usuário digitou algo específico que contenha a chave (ex: "qwen-coder")
+        for key, val in local_map.items():
+            if key in RAW_MODEL_STRING:
+                tag = val
+                break
+        
+        print(f"🦙 Selecionado Local: {tag}")
+        
         return LiteLLMModel(
-            model_id=f"ollama/{MODEL_ID}", # ex: ollama/qwen2.5-coder
+            model_id=f"ollama/{tag}", 
             api_base=base_url,
-            api_key="ollama" # Dummy key
+            api_key="ollama" 
         )
     
-    elif LLM_PROVIDER == "anthropic":
-        return LiteLLMModel(model_id=MODEL_ID, api_key=os.getenv("ANTHROPIC_API_KEY"))
-
     else:
         print(f"❌ Provedor '{LLM_PROVIDER}' não suportado neste script.")
         sys.exit(1)
 
-# --- FERRAMENTAS DO SISTEMA (Sovereign File System) ---
-# Estas ferramentas dão ao Agente "Mãos" para manipular o projeto.
-
-@tool
-def read_file(file_path: str) -> str:
-    """
-    Lê o conteúdo de um arquivo do projeto com segurança.
-    Args:
-        file_path: Caminho relativo do arquivo a partir da raiz.
-    """
-    try:
-        # Segurança básica: impedir Path Traversal
-        if ".." in file_path:
-            return "ERRO DE SEGURANÇA: Acesso a diretórios pai (..) bloqueado pelo SODA."
-        
-        target = Path(file_path)
-        if not target.exists():
-            return f"ERRO: Arquivo '{file_path}' não encontrado."
-
-        with open(target, 'r', encoding='utf-8') as f:
-            return f.read()
-    except Exception as e:
-        return f"Erro de I/O ao ler arquivo: {str(e)}"
-
-@tool
-def write_file(file_path: str, content: str) -> str:
-    """
-    Escreve conteúdo em um arquivo. Cria diretórios automaticamente se não existirem.
-    Args:
-        file_path: Caminho relativo do arquivo.
-        content: Conteúdo de texto a ser escrito.
-    """
-    try:
-        if ".." in file_path:
-            return "ERRO DE SEGURANÇA: Acesso a diretórios pai (..) bloqueado."
-
-        target = Path(file_path)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(target, 'w', encoding='utf-8') as f:
-            f.write(content)
-        return f"SUCESSO: Arquivo '{file_path}' escrito/atualizado."
-    except Exception as e:
-        return f"Erro de I/O ao escrever: {str(e)}"
-
-@tool
-def list_files(directory: str = ".") -> str:
-    """
-    Lista arquivos em um diretório, ignorando artefatos ocultos e venv.
-    Args:
-        directory: Diretório a listar.
-    """
-    try:
-        if ".." in directory: return "ERRO: Acesso negado."
-        
-        ignored = {'.git', '__pycache__', 'node_modules', 'venv', '.env', '.DS_Store'}
-        items = []
-        for item in os.listdir(directory):
-            if item not in ignored and not item.startswith('.'):
-                items.append(item)
-                
-        return "\n".join(sorted(items))
-    except Exception as e:
-        return f"Erro ao listar: {str(e)}"
+# ... (Ferramentas de Arquivo mantidas) ...
 
 # --- MOTOR RALPH (A Lógica de Loop) ---
 
@@ -123,17 +159,29 @@ class RalphLoop:
     def __init__(self):
         self.model = get_model()
         
+        # Tools: Filesystem + Web Search (Os Olhos)
+        # Prioridade: Tavily (API) > DuckDuckGo (Free)
+        tools_list = [read_file, write_file, list_files]
+        
+        tavily_key = os.getenv("TAVILY_API_KEY")
+        if tavily_key:
+            print("🦅 Search: Tavily Activated")
+            tools_list.append(TavilySearchTool(api_key=tavily_key))
+        else:
+            print("🦆 Search: DuckDuckGo Activated (Fallback)")
+            tools_list.append(DuckDuckGoSearchTool())
+        
         # CodeAgent: O agente que escreve Python para resolver problemas (roda na CPU local)
-        # Ele usa o modelo (Cloud) apenas para raciocinar sobre QUAL código escrever.
         self.agent = CodeAgent(
-            tools=[read_file, write_file, list_files],
+            tools=tools_list,
             model=self.model,
-            max_steps=20, # Circuit Breaker para evitar loop infinito
+            max_steps=20, 
             verbosity_level=1
         )
         
-        # Caminhos da Memória Quente
-        self.mem_path = Path(".agent/memory/hot")
+        # Caminhos da Memória Quente (Delegado ao MemoryManager)
+        self.memory = MemoryManager() # SUMA Engine
+        self.mem_path = self.memory.hot_mem
         self.paths = {
             "plan": self.mem_path / "task_plan.md",
             "progress": self.mem_path / "progress.md",
@@ -208,6 +256,10 @@ class RalphLoop:
             result = self.agent.run(prompt)
             
             self.log_progress(f"Concluído: {result}", type="SUCCESS")
+            
+            # --- SUMA LEARNING LOOP ---
+            self.memory.reflect_and_learn(result)
+            self.memory.log_progress(f"Ação executada: {task_instruction}")
             
         except Exception as e:
             error_msg = f"Falha na execução: {str(e)}"

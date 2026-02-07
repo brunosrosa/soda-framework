@@ -1,4 +1,8 @@
-# PROJECT CHARTER (PID-Context)
+# PROJECT CHARTER: SODA Framework
+
+**Versão Atual:** v0.3 (Building Phase)
+**Alvo Arquitetônico:** v1.8 (The Dream)
+**Data:** 2026-02-01
 
 ## 1. IDENTITY & MISSION
 - **Project Name:** SODA (Spec-Oriented Dockerized Architecture) Framework.
@@ -12,7 +16,7 @@
 - **NOT SaaS:** SODA must run locally or on user-controlled infrastructure (Sovereignty).
 
 ## 3. TECHNOLOGY STACK (Hardware-Safe Constraint)
-> **CRITICAL:** Local GPU (RTX 3070 Mobile) has a broken fan. Zero-load policy on local GPU.
+> **CRITICAL:** Local GPU (RTX 2060 Mobile 6GB) has a broken fan. Zero-load policy on local GPU.
 
 - **Orchestration (The Brain):** Google Gemini Pro (Latest) via Cloud API.
 - **Agents Runtime (The Hands):** `smolagents` (Python) running on local CPU.
