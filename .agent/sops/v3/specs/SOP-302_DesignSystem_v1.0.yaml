@@ -1,0 +1,46 @@
+sop_meta:
+  id: "SOP-302"
+  name: "Design System (The Interface)"
+  phase: "Phase 3 (UX/UI)"
+  version: "1.0"
+  responsible_role: "@frontend_specialist"
+
+inputs:
+  mandatory:
+    - path: "docs/business/SOP-201_ProdDef_Output.md"
+  context:
+    - path: "docs/business/SOP-101_Strategy_Output.md"
+
+outputs:
+  primary:
+    path: "docs/design/SOP-302_DesignSystem_Output.md"
+    format: "markdown"
+  side_effects:
+    - "Create Tailwind Config"
+    - "Define Component Library"
+
+execution_config:
+  max_iterations: 10
+  tools_allowed: ["write_file", "read_file"]
+  validation_script: "none"
+
+instructions: |
+  ## 1. Primary Objective
+  Define the visual language (Tokens & Components).
+
+  ## 2. Execution Protocol
+  1. **Design Tokens:**
+     - Colors (Primary, Secondary, Semantic).
+     - Typography (Font Family, Scale).
+     - Spacing (Grid System).
+  2. **Component Library:** Define core molecules (Button, Input, Card).
+  3. **Accessibility (a11y):** Ensure WCAG 2.1 compliance contrasts.
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Use hardcoded hex values in code (Use tokens).
+  - ⚠️ **WARNING:** Avoid "purple" (as per SODA global rules).
+
+  ## 4. Definition of Done
+  - [ ] Design Tokens defined.
+  - [ ] Component list created.
+  - [ ] Tailwind config matches system.

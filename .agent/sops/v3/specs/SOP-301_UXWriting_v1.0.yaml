@@ -1,0 +1,46 @@
+sop_meta:
+  id: "SOP-301"
+  name: "UX Writing & Narrative"
+  phase: "Phase 3 (UX/UI)"
+  version: "1.0"
+  responsible_role: "@ux_writer"
+
+inputs:
+  mandatory:
+    - path: "docs/business/SOP-101_Strategy_Output.md"
+  context:
+    - path: "docs/design/SOP-302_DesignSystem_Output.md"
+
+outputs:
+  primary:
+    path: "docs/design/SOP-301_Copy_Output.md"
+    format: "markdown"
+  side_effects:
+    - "Define Microcopy"
+    - "Create Error Messages"
+
+execution_config:
+  max_iterations: 10
+  tools_allowed: ["write_file", "read_file"]
+  validation_script: "none"
+
+instructions: |
+  ## 1. Primary Objective
+  Define the words that guide the user.
+
+  ## 2. Execution Protocol
+  1. **Voice Check:** Review Brand Persona (SOP-101).
+  2. **Microcopy:**
+     - Buttons: Info-scent (Where does it go?).
+     - Errors: Blame the system, not the user. Provide recovery.
+     - Empty States: Call to Action.
+  3. **Narrative:** Ensure flow consistency.
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Use "Lorem Ipsum". Real text only.
+  - ⚠️ **WARNING:** Avoid passive voice. Be active.
+
+  ## 4. Definition of Done
+  - [ ] Microcopy defined for all main flows.
+  - [ ] Error Dictionary created.
+  - [ ] Tone is consistent.

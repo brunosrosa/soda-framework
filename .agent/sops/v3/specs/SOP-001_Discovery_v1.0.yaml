@@ -1,0 +1,48 @@
+sop_meta:
+  id: "SOP-001"
+  name: "Product Discovery (Genesis)"
+  phase: "Phase 0 (Genesis)"
+  version: "1.0"
+  responsible_role: "@product_researcher"
+
+inputs:
+  mandatory:
+    - path: "PROJECT_CHARTER.md"
+      description: "Initial idea or hypothesis."
+  context:
+    - path: "docs/market_trends_report.md"
+      description: "Optional market data."
+
+outputs:
+  primary:
+    path: "docs/business/SOP-001_Discovery_Output.md"
+    format: "markdown"
+  side_effects:
+    - "Create CSD Matrix"
+    - "Define Proto-Personas"
+
+execution_config:
+  max_iterations: 10
+  tools_allowed: ["search_web", "write_file", "read_file"]
+  validation_script: "none"
+
+instructions: |
+  ## 1. Primary Objective
+  Validate the problem and understand the user (CSD Matrix).
+
+  ## 2. Execution Protocol
+  1. **Research:** Search for similar solutions and market gaps.
+  2. **CSD Matrix:**
+     - **Certezas:** What we know is true.
+     - **Suposições:** What we *think* is true (Needs validation).
+     - **Dúvidas:** What we don't know.
+  3. **Personas:** Define who feels the pain (Job To Be Done).
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Build features. Only validate problems.
+  - ⚠️ **WARNING:** Bias alert. Look for disconfirming evidence.
+
+  ## 4. Definition of Done
+  - [ ] CSD Matrix created.
+  - [ ] Target Persona defined.
+  - [ ] Problem Statement is clear.

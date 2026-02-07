@@ -1,0 +1,42 @@
+sop_meta:
+  id: "SOP-101"
+  name: "Business Strategy (Compass)"
+  phase: "Phase 1 (Foundation)"
+  version: "1.0"
+  responsible_role: "@product_manager"
+
+inputs:
+  mandatory:
+    - path: "docs/business/SOP-001_Discovery_Output.md"
+      description: "Validated problem statement."
+
+outputs:
+  primary:
+    path: "docs/business/SOP-101_Strategy_Output.md"
+    format: "markdown"
+  side_effects:
+    - "Create Lean Canvas"
+    - "Define Value Proposition"
+
+execution_config:
+  max_iterations: 10
+  tools_allowed: ["write_file", "read_file"]
+  validation_script: "none"
+
+instructions: |
+  ## 1. Primary Objective
+  Define the Business Model and Value Proposition.
+
+  ## 2. Execution Protocol
+  1. **Lean Canvas:** Fill the 9 blocks (Problem, Solution, UVP, Unfair Advantage, etc.).
+  2. **Value Proposition Canvas:** Map Pains/Gains to Pain Relievers/Gain Creators.
+  3. **Brand Persona:** Define the "Voice" (Casual, Professional, Technical).
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Use generic "corporate speak". Be specific.
+  - ⚠️ **WARNING:** Ensure UVP is actually unique.
+
+  ## 4. Definition of Done
+  - [ ] Lean Canvas completed.
+  - [ ] UVP is one clear sentence.
+  - [ ] Tone of Voice guideline created.

@@ -1,0 +1,46 @@
+sop_meta:
+  id: "SOP-801"
+  name: "Feedback Loop (Evolution)"
+  phase: "Phase 8 (Evolution)"
+  version: "1.0"
+  responsible_role: "@product_manager"
+
+inputs:
+  mandatory:
+    - path: "docs/growth/tracking_plan.md"
+  context:
+    - path: "docs/release_notes.md"
+
+outputs:
+  primary:
+    path: "docs/growth/sprint_retro.md"
+    format: "markdown"
+  side_effects:
+    - "Create Feature Requests"
+    - "Update CSD Matrix (SOP-001)"
+
+execution_config:
+  max_iterations: 10
+  tools_allowed: ["write_file", "read_file"]
+  validation_script: "none"
+
+instructions: |
+  ## 1. Primary Objective
+  Learn from reality to inform the next cycle (Genesis).
+
+  ## 2. Execution Protocol
+  1. **Data Ingestion:** Read Analytics, Support Tickets, User Interviews.
+  2. **Hypothesis validation:** Did the feature solve the problem?
+  3. **Next Steps:**
+     - **Kill:** Remove unused features.
+     - **Iterate:** Improve existing.
+     - **Pivot:** Change direction.
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Ignore negative feedback.
+  - ⚠️ **WARNING:** Vanity metrics (Likes) < Actionable metrics (Retention).
+
+  ## 4. Definition of Done
+  - [ ] Retro document created.
+  - [ ] Validated/Invalidated hypotheses listed.
+  - [ ] Next cycle tasks created.

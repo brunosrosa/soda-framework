@@ -1,0 +1,49 @@
+sop_meta:
+  id: "SOP-602"
+  name: "Quality Gate (Verification)"
+  phase: "Phase 6 (QA & Growth)"
+  version: "1.0"
+  responsible_role: "@qa_lead"
+
+inputs:
+  mandatory:
+    - path: "docs/current_task_spec.md"
+  context:
+    - path: ".agent/governance/SODA_GIT_RULES.md"
+
+outputs:
+  primary:
+    path: "docs/qa/test_report.md"
+    format: "markdown"
+  side_effects:
+    - "Run Full Test Suite"
+    - "Run Security Scan"
+    - "Run Lighthouse Audit"
+
+execution_config:
+  max_iterations: 10
+  tools_allowed: ["run_command", "write_file"]
+  validation_script: ".agent/scripts/checklist.py"
+
+instructions: |
+  ## 1. Primary Objective
+  Verify if the product is ready for launch.
+
+  ## 2. Execution Protocol
+  1. **Automated Checks:**
+     - Lint (`lint_runner.py`).
+     - Tests (`test_runner.py`).
+     - Vulnerability (`security_scan.py`).
+  2. **Manual/E2E Check:**
+     - Critical Paths (Checkout, Login).
+     - Browser compatibility.
+  3. **Performance:** Google Lighthouse score > 90.
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Release with Critical/High bugs.
+  - ⛔ **MUST NOT:** Bypass Security Scan.
+
+  ## 4. Definition of Done
+  - [ ] All automated checks passed.
+  - [ ] Security report clean.
+  - [ ] Performance limits met.

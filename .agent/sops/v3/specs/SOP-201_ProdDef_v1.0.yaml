@@ -1,0 +1,49 @@
+sop_meta:
+  id: "SOP-201"
+  name: "Product Definition (The Map)"
+  phase: "Phase 2 (Product)"
+  version: "1.0"
+  responsible_role: "@product_manager"
+
+inputs:
+  mandatory:
+    - path: "docs/business/SOP-101_Strategy_Output.md"
+  context:
+    - path: "docs/business/SOP-001_Discovery_Output.md"
+
+outputs:
+  primary:
+    path: "docs/business/SOP-201_ProdDef_Output.md"
+    format: "markdown"
+  side_effects:
+    - "User Story Mapping"
+    - "Backlog Creation"
+
+execution_config:
+  max_iterations: 15
+  tools_allowed: ["write_file", "read_file"]
+  validation_script: "none"
+
+instructions: |
+  ## 1. Primary Objective
+  Define WHAT to build. Turn strategy into requirements.
+
+  ## 2. Execution Protocol
+  1. **User Story Mapping:**
+     - Backbone (User Journey).
+     - Ribs (Features).
+  2. **Prioritization (MoSCoW):**
+     - **M**ust have (MVP).
+     - **S**hould have (MLP).
+     - **C**ould have.
+     - **W**on't have (v1).
+  3. **Spec Writing:** Create clear Acceptance Criteria (Gherkin).
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Scope creep. Stick to the Lean Canvas.
+  - ⚠️ **WARNING:** If logic is complex, request a flowchart.
+
+  ## 4. Definition of Done
+  - [ ] User Story Map created.
+  - [ ] MVP defined.
+  - [ ] Backlog populated.

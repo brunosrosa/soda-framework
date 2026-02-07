@@ -1,0 +1,43 @@
+sop_meta:
+  id: "SOP-601"
+  name: "Product Analytics (Tracking)"
+  phase: "Phase 6 (QA & Growth)"
+  version: "1.0"
+  responsible_role: "@product_manager"
+
+inputs:
+  mandatory:
+    - path: "docs/business/SOP-201_ProdDef_Output.md"
+  context:
+    - path: "docs/design/SOP-302_DesignSystem_Output.md"
+
+outputs:
+  primary:
+    path: "docs/growth/tracking_plan.md"
+    format: "markdown"
+  side_effects:
+    - "Implement GA4 Events"
+    - "Setup Mixpanel/PostHog"
+
+execution_config:
+  max_iterations: 10
+  tools_allowed: ["write_file", "read_file"]
+  validation_script: "none"
+
+instructions: |
+  ## 1. Primary Objective
+  If you can't measure it, you can't improve it. Define what to track.
+
+  ## 2. Execution Protocol
+  1. **Event Taxonomy:** Define `Object_Action` naming (e.g., `Button_Clicked`, `Form_Submitted`).
+  2. **Critical Paths:** Track every step of the conversion funnel.
+  3. **Properties:** What data goes with the event? (User ID, Plan Type).
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Track PII (Personally Identifiable Information) without consent.
+  - ⚠️ **WARNING:** Don't track everything. Focus on actionable metrics.
+
+  ## 4. Definition of Done
+  - [ ] Tracking Plan created.
+  - [ ] Events mapped to UI components.
+  - [ ] Privacy review completed.
