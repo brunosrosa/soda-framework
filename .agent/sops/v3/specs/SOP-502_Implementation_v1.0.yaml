@@ -1,0 +1,51 @@
+sop_meta:
+  id: "SOP-502"
+  name: "Code Implementation Protocol"
+  phase: "Phase 5 (Execution)"
+  version: "1.0"
+  responsible_role: "@code_agent"
+
+inputs:
+  mandatory:
+    - path: "docs/current_task_spec.md"
+      description: "Feature specification."
+  context:
+    - path: ".agent/governance/SODA_GIT_RULES.md"
+      description: "Git governance rules."
+
+outputs:
+  primary:
+    path: "src/feature_name.py"
+    format: "python"
+  side_effects:
+    - "Lint code"
+    - "Commit to feature branch"
+
+execution_config:
+  max_iterations: 10
+  tools_allowed: ["write_file", "run_command", "read_file", "view_file"]
+  validation_script: ".agent/scripts/lint_runner.py"
+
+instructions: |
+  ## 1. Primary Objective
+  Write clean, maintainable, and robust code fulfilling the spec.
+
+  ## 2. Execution Protocol
+  1. **Context Load:** Read relevant existing code to match style.
+  2. **Implementation:**
+     - Create functions/classes as defined in the spec.
+     - Add Type Hints (Python) or Types (TS).
+     - Add Docstrings/JSDoc.
+  3. **Quality Check:**
+     - Run Linter (`lint_runner.py`). Fix all errors.
+     - Check for hardcoded secrets (Violation of Protocol 002).
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Hardcode API Keys.
+  - ⛔ **MUST NOT:** Create functions > 50 lines (break them down).
+  - 👮 **GIT LAW:** All work must be on branch `feat/...` or `fix/...`.
+
+  ## 4. Definition of Done
+  - [ ] Code implements all requirements.
+  - [ ] Linter returns 0 errors.
+  - [ ] No secrets in code.

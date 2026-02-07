@@ -1,0 +1,50 @@
+sop_meta:
+  id: "SOP-403"
+  name: "Threat Modeling"
+  phase: "Phase 4 (Architecture)"
+  version: "1.0"
+  responsible_role: "@security_auditor"
+
+inputs:
+  mandatory:
+    - path: "docs/architecture/RFC-XXX_Name.md"
+      description: "System Architecture."
+  context:
+    - path: ".agent/sops/v3/specs/SOP-403_ThreatModel_v1.0.md"
+      description: "STRIDE methodology."
+
+outputs:
+  primary:
+    path: "docs/security/threat_model.md"
+    format: "markdown"
+  side_effects:
+    - "Create Jira/GitHub Issues for mitigations"
+
+execution_config:
+  max_iterations: 5
+  tools_allowed: ["read_file", "write_file"]
+  validation_script: "none"
+
+instructions: |
+  ## 1. Primary Objective
+  Identify security risks using STRIDE.
+
+  ## 2. Execution Protocol
+  1. **Decomposition:** Analyze the Architecture Diagram (Data Flow).
+  2. **Analysis (STRIDE):**
+     - **S**poofing: Can I fake identity?
+     - **T**ampering: Can I modify data in transit?
+     - **R**epudiation: Can I deny I did it?
+     - **I**nformation Disclosure: Can I see privacy data?
+     - **D**enial of Service: Can I crash it?
+     - **E**levation of Privilege: Can I become admin?
+  3. **Mitigation:** Propose controls for each risk.
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Assume "Internal Network" is safe.
+  - ⚠️ **WARNING:** Pay attention to API boundaries.
+
+  ## 4. Definition of Done
+  - [ ] Threat Model document created.
+  - [ ] At least 1 risk identified per relevant STRIDE category.
+  - [ ] Mitigations linked to Tasks.

@@ -1,0 +1,47 @@
+sop_meta:
+  id: "SOP-000"
+  name: "Sync Protocol (Context Compression)"
+  phase: "All Phases"
+  version: "1.0"
+  responsible_role: "@orchestrator"
+
+inputs:
+  mandatory:
+    - path: "docs/current_phase_outputs/"
+      description: "All artifacts produced in the current phase."
+  context:
+    - path: "task_plan.md"
+      description: "Current task status."
+
+outputs:
+  primary:
+    path: "docs/phase_summaries/PHASE_X_SUMMARY.md"
+    format: "markdown"
+  side_effects:
+    - "Update task_plan.md phase to COMPLETE"
+    - "Notify User for Go/No-Go"
+
+execution_config:
+  max_iterations: 3
+  tools_allowed: ["read_file", "write_file", "notify_user"]
+  validation_script: "none"
+
+instructions: |
+  ## 1. Primary Objective
+  Compress the entire activity of a Phase into a single, high-density Context File.
+
+  ## 2. Execution Protocol
+  1. **Ingest:** Read all outputs from the phase.
+  2. **Synthesize:** Create a Summary with:
+     - **What was built:** (Link to artifacts).
+     - **Decisions made:** (Why we chose X over Y).
+     - **Next Phase Goals:** (What Phase X+1 needs to know).
+  3. **Gatekeep:** Ask User permission to proceed.
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Lose critical decisions.
+  - ⚠️ **WARNING:** The output must fit in 4k tokens if possible (High Information Density).
+    
+  ## 4. Definition of Done
+  - [ ] Summary file created.
+  - [ ] User approval received.

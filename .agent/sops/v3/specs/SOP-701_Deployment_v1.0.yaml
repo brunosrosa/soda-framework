@@ -1,0 +1,57 @@
+sop_meta:
+  id: "SOP-701"
+  name: "Deployment Protocol"
+  phase: "Phase 7 (Launch)"
+  version: "1.0"
+  responsible_role: "@devops_engineer"
+
+inputs:
+  mandatory:
+    - path: "docs/release_notes.md"
+      description: "Changelog for this release (SemVer)."
+  context:
+    - path: ".agent/governance/SODA_GIT_RULES.md"
+      description: "Git flow rules."
+
+outputs:
+  primary:
+    path: "deployment_log.md"
+    format: "markdown"
+  side_effects:
+    - "Tag Release in Git (vX.Y.Z)"
+    - "Push Docker Image"
+    - "Deploy to Production"
+
+execution_config:
+  max_iterations: 10
+  tools_allowed: ["run_command", "send_command_input"]
+  validation_script: ".agent/scripts/checklist.py --url production"
+
+instructions: |
+  ## 1. Primary Objective
+  Deploy the application to the production environment safely.
+
+  ## 2. Execution Protocol
+  1. **Pre-Flight Check:**
+     - Run `checklist.py`. MUST be GREEN.
+     - Verify `release_notes.md` exists.
+  2. **Release Tagging:**
+     - Create Git Tag: `git tag -a vX.Y.Z -m "Release vX.Y.Z"`.
+     - Push Tag: `git push origin vX.Y.Z`.
+  3. **Build & Push:**
+     - Build Docker image: `docker build ...`
+     - Push to Registry.
+  4. **Deploy:**
+     - Update orchestrator (k8s/docker-compose).
+  5. **Post-Deploy Verification:**
+     - Run Smoke Tests against Live URL.
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Deploy if Tests fail.
+  - ⛔ **MUST NOT:** Deploy on Friday 5PM (Soft Rule).
+  - ⚠️ **WARNING:** Ensure Database Migrations run BEFORE code switch.
+
+  ## 4. Definition of Done
+  - [ ] Tag exists in GitHub.
+  - [ ] Service is UP on Production URL.
+  - [ ] Smoke tests passed.

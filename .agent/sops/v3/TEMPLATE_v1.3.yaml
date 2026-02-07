@@ -1,0 +1,60 @@
+# ------------------------------------------------------------------
+# SODA SOP TEMPLATE v1.3
+# ------------------------------------------------------------------
+sop_meta:
+  id: "SOP-{{ID}}"
+  name: "{{NOME_DO_PROCEDIMENTO}}" # Ex: TDD Cycle
+  phase: "{{FASE_DO_CICLO}}" # Ex: Phase 5 (Execution)
+  version: "1.3"
+  responsible_role: "@{{PERSONA}}" # Ex: @architect, @qa_lead, @code_agent
+
+# CONTRATO DE DEPENDÊNCIAS (O que o agente precisa LER)
+inputs:
+  mandatory:
+    - path: "docs/previous_sop_output.md"
+      description: "A saída do SOP anterior é a verdade imutável."
+  context:
+    - path: "docs/business/glossary.md"
+      description: "Para garantir consistência semântica."
+    - path: "PROJECT_CHARTER.md"
+      description: "Para alinhamento estratégico."
+
+# CONTRATO DE ENTREGA (O que o agente precisa CRIAR)
+outputs:
+  primary:
+    path: "docs/current_sop_output.md"
+    format: "markdown" # ou yaml, json, sql, py
+    template: "templates/{{TIPO}}_template.md"
+  side_effects:
+    - "Update task_plan.md status to DONE"
+    - "Create GitHub Issue if blockers found"
+
+# CONFIGURAÇÃO DO MOTOR DE EXECUÇÃO (RALPH)
+execution_config:
+  max_iterations: 15
+  tools_allowed: ["tool_A", "tool_B"] # Sandbox de ferramentas
+  validation_script: ".agent/scripts/validators/validate_{{ID}}.py"
+
+# CORPO DO PROCEDIMENTO (INSTRUÇÕES PARA O LLM)
+instructions: |
+  ## 1. Objetivo Primário
+  {{DESCRICAO_DO_OBJETIVO}}
+
+  ## 2. Protocolo de Execução (Algorithm)
+  1. **Ingestão:** Leia todos os arquivos listados em `inputs`. Se algum arquivo obrigatório estiver faltando, ABORTAR IMEDIATAMENTE e solicitar intervenção humana.
+  2. **Análise:** Compare o pedido atual com as restrições do `PROJECT_CHARTER.md`.
+  3. **Processamento:**
+     - Passo 3.1: {{ACAO_ESPECIFICA_1}}
+     - Passo 3.2: {{ACAO_ESPECIFICA_2}}
+  4. **Verificação:** Antes de salvar, execute o script de validação.
+
+  ## 3. Guardrails (Restrições Negativas)
+  - ⛔ **MUST NOT:** Inventar dados não presentes nos inputs.
+  - ⛔ **MUST NOT:** Violar a terminologia do Glossário.
+  - ⚠️ **WARNING:** Se encontrar ambiguidade, pergunte ao humano. Não assuma.
+  - 👮 **GIT LAW:** Commit changes to branch 'feat/{{ID}}'. Never main.
+
+  ## 4. Definition of Done (DoD)
+  - [ ] O arquivo de saída existe no caminho especificado.
+  - [ ] O conteúdo passa no validador sintático.
+  - [ ] O `task_plan.md` foi atualizado.

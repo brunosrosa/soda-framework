@@ -1,0 +1,56 @@
+sop_meta:
+  id: "SOP-501"
+  name: "TDD Cycle Protocol"
+  phase: "Phase 5 (Execution)"
+  version: "1.0"
+  responsible_role: "@code_agent"
+
+inputs:
+  mandatory:
+    - path: "docs/current_task_spec.md"
+      description: "Detailed specification of the feature to be implemented."
+  context:
+    - path: ".agent/sops/v3/specs/SOP-501_TDD_Cycle_v1.0.md"
+      description: "Human-readable TDD Guidelines."
+
+outputs:
+  primary:
+    path: "tests/test_feature_name.py"
+    format: "python"
+    template: "templates/test_case_template.py"
+  side_effects:
+    - "Run test suite (RED state)"
+    - "Implement feature code"
+    - "Run test suite (GREEN state)"
+
+execution_config:
+  max_iterations: 5
+  tools_allowed: ["write_file", "run_command", "read_file"]
+  validation_script: ".agent/scripts/test_runner.py"
+
+instructions: |
+  ## 1. Primary Objective
+  Implement a feature using the Red-Green-Refactor cycle.
+
+  ## 2. Execution Protocol
+  1. **RED Phase:**
+     - Analyze the `current_task_spec.md`.
+     - Create/Update a test file mirroring the spec.
+     - Run the test (`pytest`). CONFIRM it fails.
+  2. **GREEN Phase:**
+     - Write the MINIMUM code necessary to pass the test.
+     - Run only the specific test case.
+     - Verify it passes.
+  3. **REFACTOR Phase:**
+     - Check code for duplication or complexity.
+     - Improve readability without breaking the test.
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Write implementation code BEFORE the test exists.
+  - ⛔ **MUST NOT:** Ignore failed tests.
+  - ⚠️ **WARNING:** If a test passes immediately (without code), check your test logic.
+
+  ## 4. Definition of Done
+  - [ ] Test file exists and covers the spec scenarios.
+  - [ ] Implementation file exists.
+  - [ ] All tests pass.

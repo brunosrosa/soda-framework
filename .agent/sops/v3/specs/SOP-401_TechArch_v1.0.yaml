@@ -1,0 +1,47 @@
+sop_meta:
+  id: "SOP-401"
+  name: "Technical Architecture Definition"
+  phase: "Phase 4 (Architecture)"
+  version: "1.0"
+  responsible_role: "@architect"
+
+inputs:
+  mandatory:
+    - path: "docs/business/SOP-201_ProductDef_output.md"
+      description: "Functional requirements."
+  context:
+    - path: ".agent/sops/v3/specs/SOP-401_TechArch_v1.0.md"
+      description: "Architecture Patterns."
+
+outputs:
+  primary:
+    path: "docs/architecture/RFC-XXX_Name.md"
+    format: "markdown"
+    template: "templates/rfc_template.md"
+  side_effects:
+    - "Update visual diagram (Mermaid)"
+
+execution_config:
+  max_iterations: 10
+  tools_allowed: ["read_file", "write_file", "search_web"]
+  validation_script: "none"
+
+instructions: |
+  ## 1. Primary Objective
+  Define the system structure (Components, Data Flow, Tech Stack).
+
+  ## 2. Execution Protocol
+  1. **Analysis:** Read requirements. Identify complexity.
+  2. **Pattern Selection:** Choose (Monolith, Microservices, Serverless). Justify.
+  3. **Data Design:** Define Schema (Entities, Relationships).
+  4. **Diagramming:** Create Mermaid diagrams (C4 Model Level 1 & 2).
+
+  ## 3. Guardrails
+  - ⛔ **MUST NOT:** Propose unverified technology (Bleeding Edge).
+  - ⛔ **MUST NOT:** Ignore non-functional requirements (Scale, Latency).
+
+  ## 4. Definition of Done
+  - [ ] RFC Document created.
+  - [ ] Context diagram included.
+  - [ ] Container diagram included.
+  - [ ] Data Schema defined.
