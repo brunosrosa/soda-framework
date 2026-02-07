@@ -99,6 +99,20 @@ services:
     networks:
       - soda_network
 
+  # 5. Agent-Browser (Playwright)
+  mcp_browser:
+    build:
+      context: ../services/browser
+      dockerfile: Dockerfile
+    container_name: soda_mcp_browser
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    environment:
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    networks:
+      - soda_network
+
 networks:
   soda_network:
     driver: bridge

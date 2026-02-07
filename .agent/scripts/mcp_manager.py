@@ -83,6 +83,20 @@ class AlephTool(McpDockerTool):
     def forward(self, path: str) -> str:
         return self._execute_in_docker({"path": path})
 
+class BrowserTool(McpDockerTool):
+    def __init__(self):
+        super().__init__(
+            "browser", "navigate",
+            "Navigates to a URL using Headless Browser.",
+            {"url": {"type": "string", "description": "URL to visit."}},
+            check_cmd=["echo", "Browser Ready"] # Simple check
+        )
+
+    def forward(self, url: str) -> str:
+        # Browser MCP usually has tools like 'navigate', 'click', etc.
+        # This is a wrapper for the test. Ideally we list tools.
+        return self._execute_in_docker({"url": url})
+
 class McpManager:
     def __init__(self, profile: str = "default"):
         self.profile = profile
@@ -96,7 +110,7 @@ class McpManager:
                 "profiles": {
                     "default": ["read_file"],
                     "dev": ["heuristic", "github"],
-                    "research": ["toon", "aleph"]
+                    "research": ["toon", "aleph", "browser"]
                 }
             }
         return json.loads(CATALOG_PATH.read_text())
@@ -114,9 +128,9 @@ class McpManager:
         if self.profile == "dev":
             target_servers = ["heuristic", "github"]
         elif self.profile == "research":
-             target_servers = ["toon", "aleph"]
+             target_servers = ["toon", "aleph", "browser"]
         elif self.profile == "full":
-             target_servers = ["heuristic", "github", "toon", "aleph"]
+             target_servers = ["heuristic", "github", "toon", "aleph", "browser"]
         
         # Instanciar Classes Específicas
         if "heuristic" in target_servers:
@@ -130,6 +144,9 @@ class McpManager:
             
         if "aleph" in target_servers:
             resolved_tools.append(AlephTool())
+
+        if "browser" in target_servers:
+            resolved_tools.append(BrowserTool())
             
         return resolved_tools
 
